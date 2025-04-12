@@ -13,15 +13,27 @@
     "prepare": "husky"
   },
   "dependencies": {
+    "@ai-sdk/openai": "1.2.0",
     "@nuxt/eslint": "1.2.0",
     "@nuxt/ui": "3.0.0",
+    "ai": "4.1.51",
     "eslint": "^9.0.0",
     "nuxt": "^3.16.1",
+    "ollama-ai-provider": "1.2.0",
     "vue": "^3.5.13",
     "vue-router": "^4.5.0"
   },
   "packageManager": "pnpm@10.6.5+sha512.cdf928fca20832cd59ec53826492b7dc25dc524d4370b6b4adbf65803d32efaa6c1c88147c0ae4e8d579a6c9eec715757b50d4fa35eea179d868eada4ed043af",
   "devDependencies": {
+    "@iconify-json/heroicons": "^1.2.2",
+    "@nuxtjs/mdc": "^0.16.1",
     "husky": "^9.1.7"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "@parcel/watcher",
+      "esbuild",
+      "vue-demi"
+    ]
   }
 }
