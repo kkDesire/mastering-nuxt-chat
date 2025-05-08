@@ -1,5 +1,3 @@
-import type { Project } from "@/types"
-
 export default function useProject(projectId: string){
   const { projects } = useProjects()
 

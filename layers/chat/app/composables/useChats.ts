@@ -1,6 +1,3 @@
-import type { Chat } from "@/types";
-import { MOCK_CHAT } from "./mockData";
-
 export default function useChats() {
   const chats = useState<Chat[]>('chats', () => [MOCK_CHAT])
 
@@ -32,7 +29,11 @@ export default function useChats() {
     options: { projectId?: string } = {}
   ){
     const chat = createChat(options)
-    await navigateTo(`/chats/${chat.id}`)
+    if(chat.projectId){
+      await navigateTo(`/projects/${chat.projectId}/chats/${chat.id}`)
+    }else{
+      await navigateTo(`/chats/${chat.id}`)
+    }
   }
 
   function chatsInProject(projectId: string){
