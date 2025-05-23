@@ -10,40 +10,63 @@ export default function useChat(chatId: string){
     () => chat.value?.messages || []
   )
 
-  function createMessage(
-    message: string,
-    role: ChatMessage['role']
-  ){
-    const id = messages.value?.length.toString()
+  const { data, execute, status } = useFetch<ChatMessage[]>(`/api/chats/${chatId}/messages`, {
+    immediate: false,
+    default: () => []
+  })
 
-    return {
-      id,
-      role,
-      content: message,
-      createdAt: new Date(),
-      updatedAt: new Date()
-    }
+  async function fetchMessages(){
+    if(status.value !== 'idle' || !chat.value) return
+    await execute()
+    chat.value.messages = data.value
+  }
+
+  async function generateChatTitle(message: string){
+    if(!chat.value) return
+
+    const updatedChat = await $fetch<Chat>(`/api/chats/${chatId}/title`, {
+      method: 'POST',
+      body: {
+        message
+      }
+    })
+
+    chat.value.title = updatedChat.title
   }
 
   async function sendMessage(message: string){
     if(!chat.value) return
 
-    messages.value.push(createMessage(message, 'user'))
+    if(messages.value.length === 0){
+      await generateChatTitle(message)
+    }
 
-    const data = await $fetch<ChatMessage>('/api/ai', {
+    const newMessages = await $fetch<ChatMessage>(`/api/chats/${chatId}/messages`, {
       method: 'POST',
       body: {
-        messages: messages.value
+        content: message,
+        role: 'user'
       }
     })
 
+    messages.value.push(newMessages)
+
+    const aiResponse = await $fetch<ChatMessage>(`/api/chats/${chatId}/messages/generate`, {
+      method: 'POST',
+      body: {
+        content: message,
+        role: 'assistant'
+      }
+    })
+    messages.value.push(aiResponse)
+
     chat.value.updatedAt = new Date()
-    messages.value.push(data)
   }
   return {
     chat,
     messages,
-    sendMessage
+    sendMessage,
+    fetchMessages,
   }
 }
 

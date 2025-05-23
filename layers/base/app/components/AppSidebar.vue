@@ -1,19 +1,20 @@
 <script setup lang="ts">
-import type { NavigationMenuItem } from '@nuxt/ui';
-
+import type { NavigationMenuItem } from '@nuxt/ui'
 defineProps<{
   isOpen: boolean
 }>()
 
 const route = useRoute()
 const { projects, createProject } = useProjects()
-const { chats, chatsInProject, createChatAndNavigate } = useChats()
+const { chats, chatsInProject, createChatAndNavigate } =
+  useChats()
 
 function isCurrentProject(projectId: string): boolean {
   return route.params.projectId === projectId
 }
-
-const chatsInCurrentProject = computed(() => chatsInProject(route.params.projectId as string))
+const chatsInCurrentProject = computed(() =>
+  chatsInProject(route.params.projectId as string)
+)
 
 function formatProjectChat(
   project: Project,
@@ -26,20 +27,11 @@ function formatProjectChat(
   }
 }
 
-const projectItems = computed<NavigationMenuItem[]>(
-  () => projects.value?.map(formatProjectItem) || []
-)
-
-async function handleCreateProject() {
-  const newProject = await createProject()
-  await createChatAndNavigate({
-    projectId: newProject.id
-  })
-}
 function formatProjectItem(
   project: Project
 ): NavigationMenuItem {
   const isCurrent = isCurrentProject(project.id)
+
   const baseItem: NavigationMenuItem = {
     label: project.name,
     to: `/projects/${project.id}`,
@@ -50,13 +42,29 @@ function formatProjectItem(
   if (isCurrent) {
     return {
       ...baseItem,
-      children: chatsInCurrentProject.value.map(chat => formatProjectChat(project, chat))
+      children: chatsInCurrentProject.value.map((chat) =>
+        formatProjectChat(project, chat)
+      ),
     }
   }
 
   return baseItem
 }
-const chatsWithoutProject = computed(() => chats.value.filter(chat => chat.projectId === undefined))
+
+const projectItems = computed<NavigationMenuItem[]>(
+  () => projects.value?.map(formatProjectItem) || []
+)
+
+async function handleCreateProject() {
+  const newProject = await createProject()
+  await createChatAndNavigate({
+    projectId: newProject.id,
+  })
+}
+
+const chatsWithoutProject = computed(() =>
+  chats.value.filter((c) => c.projectId === undefined)
+)
 
 function filterChats(startDays: number, endDays?: number) {
   return computed(() => {
@@ -78,7 +86,6 @@ function formatChatItem(chat: Chat): NavigationMenuItem {
     label: chat.title || 'Untitled Chat',
     to: `/chats/${chat.id}`,
     active: route.params.id === chat.id,
-    defaultOpen: true
   }
 }
 
@@ -108,7 +115,7 @@ async function handleCreateChat() {
             size="sm" 
             color="neutral" variant="soft" 
             icon="i-heroicons-plus" 
-            class="w-full mt-2"
+            class="w-full my-2"
             @click="handleCreateProject"
           >
             New project

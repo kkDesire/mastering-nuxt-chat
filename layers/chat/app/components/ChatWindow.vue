@@ -1,6 +1,8 @@
 <script setup lang="ts">
-import type { Chat, ChatMessage } from '../types'
-import type MarkdownRenderer from './MarkdownRenderer.vue';
+import type {
+  ChatMessage,
+  Chat,
+} from '../../shared/types/types'
 
 const props = defineProps<{
   messages: ChatMessage[]
@@ -8,11 +10,11 @@ const props = defineProps<{
   typing: boolean
 }>()
 
-const emit = defineEmits<{
-  (e: 'send-message', message: string): void
-}>()
+const emit = defineEmits(['send-message'])
 
-const { showScrollButton, scrollToBottom, pinToBottom } = useChatScroll()
+const { showScrollButton, scrollToBottom, pinToBottom } =
+  useChatScroll()
+
 function handleSendMessage(message: string) {
   emit('send-message', message)
 }
@@ -33,7 +35,9 @@ watch(() => props.messages, pinToBottom, { deep: true })
       <template v-else>
         <div class="chat-header">
           <h1 class="title">
-            {{ chat?.title || 'Untitled chat' }}
+            <TypewriterText
+              :text="chat.title || 'Untitled Chat'"
+            />
           </h1>
         </div>
         <div class="messages-container">
@@ -43,17 +47,21 @@ watch(() => props.messages, pinToBottom, { deep: true })
             class="message"
             :class="{
               'message-user': message.role === 'user',
-              'message-ai': message.role === 'assistant'
+              'message-ai': message.role === 'assistant',
             }"
           >
             <div class="message-content">
-              <MarkdownRenderer :content="message.content" />
+              <MarkdownRenderer
+                :content="message.content"
+              />
             </div>
           </div>
+
           <span v-if="typing" class="typing-indicator">
             &#9611;
           </span>
         </div>
+
         <div class="message-form-container">
           <div class="scroll-to-bottom-button-container">
             <UButton
@@ -76,8 +84,10 @@ watch(() => props.messages, pinToBottom, { deep: true })
 /* ===== Layout & Container Styles ===== */
 .scroll-container {
   overflow-y: auto;
-  height: 100%;
+  width: 100%;
   box-sizing: border-box;
+  flex: 1 1 auto;
+  min-height: 0;
 }
 
 .chat-container {
@@ -204,7 +214,7 @@ watch(() => props.messages, pinToBottom, { deep: true })
   display: none; /* Chrome, Safari, Opera */
 }
 
-.typing-indicator{
+.typing-indicator {
   display: inline-block;
   animation: pulse 1s infinite;
   margin-left: 0.25rem;
